@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Valentine</title>
+  <style>
+    :root{
+      --pink:#ff4d88;
+      --pink2:#ff7fb0;
+      --card:#ffffffcc;
+      --text:#222;
+      --muted:#666;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: linear-gradient(180deg, #ffd6e7 0%, #ffeef6 35%, #ffd6e7 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    #app{
+      width: min(420px, 100%);
+    }
+    .wrap{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      align-items:center;
+    }
+    .card{
+      width:100%;
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border-radius: 22px;
+      padding: 22px 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.08);
+      text-align:center;
+      overflow:hidden;
+    }
+    h1{
+      margin: 6px 0 10px;
+      font-size: 34px;
+      letter-spacing: .2px;
+    }
+    .sub{
+      margin:0 auto 10px;
+      color:var(--muted);
+      line-height:1.5;
+      font-size: 15px;
+      max-width: 320px;
+    }
+    .gif{
+      width: 210px;
+      border-radius: 18px;
+      margin: 6px auto 14px;
+      display:block;
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+    }
+    .stickers{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin: 8px 0 0;
+      flex-wrap:wrap;
+      opacity:.95;
+    }
+    .sticker{
+      font-size: 22px;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
+      animation: floaty 2.8s ease-in-out infinite;
+    }
+    .sticker:nth-child(2){animation-delay:.2s}
+    .sticker:nth-child(3){animation-delay:.4s}
+    .sticker:nth-child(4){animation-delay:.6s}
+    @keyframes floaty{
+      0%,100%{transform: translateY(0)}
+      50%{transform: translateY(-6px)}
+    }
+
+    .buttons{
+      display:flex;
+      gap: 12px;
+      justify-content:center;
+      margin-top: 14px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      outline:none;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .08s ease, filter .15s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{transform: scale(.98)}
+    .yes{
+      background: linear-gradient(90deg, var(--pink), var(--pink2));
+      color:white;
+      box-shadow: 0 10px 18px rgba(255,77,136,.30);
+    }
+    .no{
+      background: #fff;
+      color: #444;
+      border: 2px solid rgba(0,0,0,.08);
+    }
+    .ghost{
+      background:#fff;
+      color:#333;
+      border:2px solid rgba(255,77,136,.25);
+    }
+
+    .list{
+      text-align:left;
+      margin-top: 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+      background: rgba(255,255,255,.75);
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.05);
+    }
+    .left{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .name{
+      font-weight: 750;
+    }
+    .tag{
+      font-size: 12px;
+      color: #777;
+    }
+    input[type="checkbox"]{
+      width: 20px;
+      height: 20px;
+      accent-color: var(--pink);
+    }
+    .hint{
+      font-size: 13px;
+      color:#777;
+      margin-top: 6px;
+    }
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      text-align:left;
+      background: rgba(255,255,255,.7);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(0,0,0,.06);
+      line-height:1.5;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script>
+    const app = document.getElementById("app");
+
+    // ---------- DATA ----------
+    const foods = [
+      { name: "Tapa", category: "Breakfast" },
+      { name: "Longganisa", category: "Breakfast" },
+      { name: "Chorizo", category: "Breakfast" },
+      { name: "Tocino", category: "Breakfast" },
+      { name: "Spam", category: "Breakfast" },
+      { name: "Bangus", category: "Seafood" },
+
+      { name: "Beef Salpicao", category: "Beef" },
+      { name: "Gambas", category: "Seafood" },
+      { name: "Salisbury Steak", category: "Beef" },
+      { name: "Chicken Fingers", category: "Chicken" },
+
+      { name: "Fries", category: "Sides" },
+    ];
+
+    const desserts = [
+      "Sapin-sapin",
+      "Leche Flan",
+      "Torones A la mode",
+      "Spicy Mango with ice cream of the day"
+    ];
+
+    const drinks = [
+      "Iced Coffee",
+      "Hot Coffee",
+      "Matcha Latte",
+      "Chocolate Drink",
+      "Water"
+    ];
+
+    let pickedFoods = [];
+    let pickedDesserts = [];
+    let pickedDrinks = [];
+
+    // ---------- RENDER HELPER ----------
+    function render(html){
+      app.innerHTML = `<div class="wrap">${html}</div>`;
+    }
+
+    // ---------- PAGE 1 ----------
+    function page1(){
+      render(`
+        <div class="card">
+          <div class="stickers">
+            <div class="sticker">💖</div>
+            <div class="sticker">✨</div>
+            <div class="sticker">🧸</div>
+            <div class="sticker">🌷</div>
+          </div>
+<img
+  src="https://media0.giphy.com/media/v1.Y2lkPTZjMDliOTUyZjlnYWI5NW81eTBvNmVzcXFndm1rMXFzZnhpNW15ZXhxbXR3emxwYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/y93x7gLXTO5dnSWCEI/giphy.gif"
+  style="width:170px; border-radius:16px; margin:10px auto; display:block;"
+  alt="Cute cat gif"
+/>
+          <h1>Will you be my Valentine, my Zy?</h1>
+          <p class="sub">
+          
+          </p>
+
+          <div class="buttons" style="position:relative;">
+            <button class="yes" onclick="page2()">Yes 💘</button>
+            <button id="noBtn" class="no" type="button">No 🙈</button>
+          </div>
+
+          <p class="hint"></p>
+        </div>
+      `);
+
+      // Make NO button dodge touches/clicks (mobile-friendly)
+      const noBtn = document.getElementById("noBtn");
+      const moveNo = () => {
+        const card = document.querySelector(".card");
+        const rect = card.getBoundingClientRect();
+
+        // random within card bounds
+        const x = Math.max(8, Math.random() * (rect.width - 120));
+        const y = Math.max(80, Math.random() * (rect.height - 120));
+
+        noBtn.style.position = "absolute";
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+      };
+
+      noBtn.addEventListener("mouseover", moveNo);
+      noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNo(); }, {passive:false});
+      noBtn.addEventListener("click", moveNo);
+    }
+
+    // ---------- PAGE 2 (AFTER YES) ----------
+    function page2(){
+      render(`
+        <img
+  src="https://media4.giphy.com/media/v1.Y2lkPTZjMDliOTUyaW9oMGpuYWt4OHVkbDA3cnVlOWI5ZmZhbHZuYTByNzQ0eGVjMzZodiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PIlp4W4Lj83Hc3ZXpP/giphy.gif"
+  style="width:180px; border-radius:18px; margin:10px auto 15px; display:block;"
+  alt="Cute gif"
+          />
+
+          <h1>YEY!💖</h1>
+
+          <p class="sub" style="margin-bottom:10px;">
+            <b>Date:</b> After lunch – 12 PM<br>
+            <b>Place:</b> Moonroast Café ☕<br>
+            <b>Outfit:</b> Casual / Cute fit
+          </p>
+
+          <p class="sub" style="color:#555; margin-top:10px;">
+            Pasensya na love, papupuntahin pa kita ha 🥹 But ito yung plan ko kasi then uwi na lang ulit tayo after punta tayo sa iba 💜<br>
+            Pag pinagpala na ako na ang susundo sayo at maghahatid 🥰 
+         
+          </p>
+
+          <div class="buttons">
+            <button class="yes" onclick="page3()">Next ➜ Food</button>
+          </div>
+        </div>
+      `);
+    }
+
+    // ---------- PAGE 3 (FOOD) ----------
+    function page3(){
+      render(`
+        <div class="card">
+          <h1>Choose Food 🍽️</h1>
+          <p class="sub">Pwede pumili ng kahit ilan, then press OK.</p>
+
+          <div class="list">
+            ${foods.map(f => `
+              <label class="item">
+                <div class="left">
+                  <div class="name">${f.name}</div>
+                  <div class="tag">${f.category}</div>
+                </div>
+                <input type="checkbox" value="${f.name}">
+              </label>
+            `).join("")}
+          </div>
+
+          <div class="buttons">
+            <button class="yes" onclick="saveFoods()">OK ➜ Desserts</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function saveFoods(){
+      pickedFoods = [...document.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+      page4();
+    }
+
+    // ---------- PAGE 4 (DESSERTS) ----------
+    function page4(){
+      render(`
+        <div class="card">
+          <h1>Now choose desserts 🍰</h1>
+          <p class="sub">Same lang— Just choose then Next.</p>
+
+          <div class="list">
+            ${desserts.map(d => `
+              <label class="item">
+                <div class="left">
+                  <div class="name">${d}</div>
+                  <div class="tag">Dessert</div>
+                </div>
+                <input type="checkbox" value="${d}">
+              </label>
+            `).join("")}
+          </div>
+
+          <div class="buttons">
+            <button class="yes" onclick="saveDesserts()">Next ➜ Drinks</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function saveDesserts(){
+      pickedDesserts = [...document.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+      page5();
+    }
+
+    // ---------- PAGE 5 (DRINKS) ----------
+    function page5(){
+      render(`
+        <div class="card">
+          <h1>Choose Drinks ☕🥤</h1>
+          <p class="sub">Last na to, Pili ka lang kahit Matcha lang naman pipiliin mo 🤣</p>
+
+          <div class="list">
+            ${drinks.map(d => `
+              <label class="item">
+                <div class="left">
+                  <div class="name">${d}</div>
+                  <div class="tag">Drink</div>
+                </div>
+                <input type="checkbox" value="${d}">
+              </label>
+            `).join("")}
+          </div>
+
+          <div class="buttons">
+            <button class="yes" onclick="saveDrinks()">OK ➜ Answer Sheet</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function saveDrinks(){
+      pickedDrinks = [...document.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+      finalPage();
+    }
+
+    // ---------- FINAL ANSWER SHEET ----------
+    function finalPage(){
+      const text =
+`💖 VALENTINE ANSWER SHEET 💖
+
+FOODS:
+${pickedFoods.join(", ") || "None"}
+
+DESSERTS:
+${pickedDesserts.join(", ") || "None"}
+
+DRINKS:
+${pickedDrinks.join(", ") || "None"}
+
+(Just screenshot this and send to Me 😚)`;
+
+      render(`
+        <div class="card">
+          <h1>Done! 💜</h1>
+          <p class="sub">Done napo! See you at Moonroast Cafe 😚</p>
+
+          <div class="mono">${escapeHtml(text)}</div>
+
+          <div class="buttons">
+            <button class="ghost" onclick="copyAnswerSheet()">Copy Answer Sheet</button>
+            <button class="yes" onclick="page1()">Restart</button>
+          </div>
+
+          <p class="hint">Tip: kung ayaw mag-copy, screenshot mo na lang 😄</p>
+        </div>
+      `);
+    }
+
+    function copyAnswerSheet(){
+      const foodsTxt = pickedFoods.join(", ") || "None";
+      const dessertsTxt = pickedDesserts.join(", ") || "None";
+      const drinksTxt = pickedDrinks.join(", ") || "None";
+      const text =
+`💖 VALENTINE ANSWER SHEET 💖
+
+FOODS:
+${foodsTxt}
+
+DESSERTS:
+${dessertsTxt}
+
+DRINKS:
+${drinksTxt}`;
+      navigator.clipboard.writeText(text)
+        .then(()=> alert("Copied! 💖 Paste mo na sa chat"))
+        .catch(()=> alert("Di ma-copy sa phone minsan 😅 Screenshot mo na lang"));
+    }
+
+    function escapeHtml(str){
+      return str
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // START
+    page1();
+  </script>
+</body>
+</html>
